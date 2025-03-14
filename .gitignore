@@ -4,4 +4,6 @@
 *.a
 *.so
 *.dll
+*.hex
+*.asm
 
