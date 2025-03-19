@@ -18,48 +18,36 @@ int usart_init(int x){
     return 0;
 }
 
-int usart_transmit(char ch){
+int usart_transmit(char *ch){
 
-    while(!(UCSR0A & (1<<5))){}   //wait for the buffer to be empty
+    for (;*ch != '\0' ; ch++){
     
-    UDR0 = ch;  // write the char in buffer
+      while(!(UCSR0A & (1<<5))){}   //wait for the buffer to be empty   
+      UDR0 = *ch;
+          
+    }
     
     return 0;
+}
+
+char usart_receive(void){
+
+    while(!(UCSR0A & (1<<7))){}   //wait for receiving the data
+    
+    return (char)UDR0;
+
 }
 
 
 int main(void){
 
-    char str[] = "Hello World!!";
-
-    DDRB |= (1 << 5);
- 
     usart_init(9600);  //initialize hardware
     
     while(1){
-    
-        int index;
         
-        usart_transmit('\r');
+        usart_transmit("HELLO");
+        for(unsigned long int i = 0; i<=1000000 ; i++){}
         
-        for( index = 0 ; str[index] != '\0' ; index++){
-        
-            PORTB |= (1<<5);                        //turn on the led indicator
-            
-            for( long int i = 0; i<=500000 ; i++){}  //delay
-            
-            usart_transmit(str[index]);                    //transmit char
-            
-            PORTB &= ~(1<<5);                       //turn off the led indicator
-        }
-        
-        for( unsigned long int i = 0; i<=1000000 ; i++){}  //delay
-        
-        index=0;
-        
-        usart_transmit('\n');
-        
-    
     }
  
     return 0;
